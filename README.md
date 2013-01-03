@@ -44,18 +44,18 @@ python setup.py install
 # AWS
 
 ```
-import awspy
+from awspy import awspy
 
 access_key = "SJFKDSJLKGLKDSF"
 secret_key = "SFLKJSLKGLKGLKDSFSJFJSLFDSLFJ"
 
 # cloud formation, non-default region
-cfn = AWSConn(access_key, secret_key, region="us-west-1", product="cfn")
+cfn = awspy.AWSConn(access_key, secret_key, region="us-west-1", product="cfn")
 result = cfn.aws_query("DescribeStacks")
 print result
 
 # ec2, default region, with parameters
-ec2 = AWSConn(access_key, secret_key, product="ec2")
+ec2 = awspy.AWSConn(access_key, secret_key, product="ec2")
 result = ec2.aws_query("DescribeInstances", [("InstRRReId.1","i-81ce9afd")] )
 print result
 ```
@@ -63,12 +63,12 @@ print result
 # Eucalyptus
 
 ```
-import awspy
+from awspy import awspy
 
 access_key = "SDKJLKJFGKLJLGJ"
 secret_key = "LKKJDLSFDSFLKDSFLKDJLSLFDSLFJ"
 
-euca = AWSConn(access_key, secret_key, endpoint="123.123.123.123", path="/services/Eucalyptus/", api_version="2011-01-01")
+euca = awspy.AWSConn(access_key, secret_key, endpoint="123.123.123.123", path="/services/Eucalyptus/", api_version="2011-01-01")
 result = euca.aws_query("DescribeInstances")
 print result
 
