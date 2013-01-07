@@ -133,19 +133,21 @@ class AWSConn():
         params_list = params.items() + action_params
         
         params_list.sort()
+        print params_list
         query_string = '&'.join(['%s=%s' % (k,urllib2.quote(str(v))) for (k,v) in params_list if v])
         string_to_sign = "GET\n%s\n%s\n%s" % (self.endpoint, self.path, query_string.encode("utf-8"))
         digest = hmac.new(self.secret_key, string_to_sign, hashlib.sha256).digest()
         signature = urllib2.quote(base64.b64encode(digest))
 
         url = "%s://%s%s?%s&Signature=%s" % (self.protocol.lower(), self.endpoint, self.path, query_string, signature)
+        print url
 
         try:
             response = urllib2.urlopen(url, None, self.timeout)
         except urllib2.HTTPError, e:
-            raise Exception("HTTPError = %s, %s, %s" % (str(e.code), e.msg, e.read()))
+            raise Exception("HTTPError = %s, %s, %s\n%s" % (str(e.code), e.msg, e.read(), url))
         except urllib2.URLError, e:
-            raise Exception("URLError = " + str(e.reason))
+            raise Exception("URLError = %s\n%s" % (str(e.reason), url))
         except httplib.HTTPException, e:
             raise Exception("HTTPException")
         except Exception:
