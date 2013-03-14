@@ -21,7 +21,7 @@ from awspy import __version__
 
 setuptools.setup(
     name='awspy',
-    version = __version__,
+    version=__version__,
     description='AWS Python Simple Client',
     license='Apache License (2.0)',
     author='Patrick Dunnigan',
