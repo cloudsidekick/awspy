@@ -26,7 +26,7 @@ import base64
 
 versions = {
     "emr" : "2009-03-31",
-    "ec2" : "2011-01-01",
+    "ec2" : "2013-02-01",
     "sns" : "2010-03-31",
     "cfn" : "2010-05-15",
     "as" : "2010-08-01",
@@ -75,19 +75,22 @@ class AWSConn():
         timeout - in seconds"""
 
     def __init__(self, access_key, secret_key, protocol="https", endpoint=None, region=None,
-        product="ec2", api_version=None, path="/", timeout=10):
+        product="ec2", api_version=None, path="/", timeout=10, debug=False):
         
         self.access_key = access_key
         self.secret_key = secret_key
         self.protocol = protocol
         self.path = path 
         self.timeout = timeout
+        self.debug = debug
 
         if not api_version:
             self.api_version = versions[product]
         else:
             self.api_version = api_version
 
+        if self.debug:
+            print "api version is " + self.api_version
         if not endpoint:
             self.endpoint = self.build_endpoint(product, region)
         else:
@@ -133,14 +136,16 @@ class AWSConn():
         params_list = params.items() + action_params
         
         params_list.sort()
-        print params_list
+        if self.debug:
+            print params_list
         query_string = '&'.join(['%s=%s' % (k,urllib2.quote(str(v))) for (k,v) in params_list if v])
         string_to_sign = "GET\n%s\n%s\n%s" % (self.endpoint, self.path, query_string.encode("utf-8"))
         digest = hmac.new(self.secret_key, string_to_sign, hashlib.sha256).digest()
         signature = urllib2.quote(base64.b64encode(digest))
 
         url = "%s://%s%s?%s&Signature=%s" % (self.protocol.lower(), self.endpoint, self.path, query_string, signature)
-        print url
+        if self.debug:
+            print url
 
         try:
             response = urllib2.urlopen(url, None, self.timeout)
