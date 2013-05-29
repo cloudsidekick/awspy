@@ -107,7 +107,7 @@ class AWSConn():
         end_name = end_names[product]
 
         # some aws products don't conform to the following, needs fixing up
-        if not region or (product == "sdb" and region == "us-east-1"):
+        if not region or (product == "sdb" and region == "us-east-1") or product == "iam":
             endpoint = "%s.amazonaws.com" % (end_name)
         else:
             endpoint = "%s.%s.amazonaws.com" % (end_name, region)
