@@ -9,11 +9,11 @@ fi
 git tag -d $version
 git push origin :refs/tags/$version
 git pull
-sed -i "" -e "s|^__version__=.*$|__version__='${version}'|" catoclient/__init__.py
+sed -i "" -e "s|^__version__=.*$|__version__='${version}'|" awspy/__init__.py
 sed -i "" -e "s|^    version=.*$|    version='${version}',|" setup.py
 echo $version > VERSION
 
-git add VERSION catoclient/__init__.py setup.py
+git add VERSION awspy/__init__.py setup.py
 git commit -m "bump release to ${version}"
 git push
 git tag -a $version -m "Version $version"
