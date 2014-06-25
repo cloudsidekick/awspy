@@ -91,7 +91,7 @@ class AWSConn():
             self.api_version = api_version
 
         if self.debug:
-            print "api version is " + self.api_version
+            print("api version is %s" % (self.api_version))
         if not endpoint:
             self.endpoint = self.build_endpoint(product, region)
         else:
@@ -122,10 +122,12 @@ class AWSConn():
         url = "%s/%s" % (baseurl, "date")
         response = urllib2.urlopen(url, None, self.timeout)
         timestamp = response.info().getheader("Date")
-        print timestamp
+        if self.debug:
+            print("Timestamp = %s" % (timestamp))
 
         url = "%s/%s/%s" % (baseurl, self.api_version, action)
-        print url
+        if self.debug:
+            print("Url = %s" % (url))
 
         digest = hmac.new(self.secret_key, timestamp, hashlib.sha256).digest()
         signature = base64.b64encode(digest)
@@ -162,8 +164,10 @@ class AWSConn():
         params_list.sort()
 
         if self.debug:
-            print params_list
-        query_string = '&'.join(['%s=%s' % (k,urllib2.quote(str(v))) for (k,v) in params_list if v])
+            print("Parameter List = %s" % (params_list))
+
+        query_string = '&'.join(['%s=%s' % (urllib2.quote(k, safe=''),urllib2.quote(str(v), safe='-_~')) for (k,v) in params_list if v])
+
         string_to_sign = "GET\n%s\n%s\n%s" % (self.endpoint, self.path, query_string.encode("utf-8"))
         digest = hmac.new(self.secret_key, string_to_sign, hashlib.sha256).digest()
         signature = urllib2.quote(base64.b64encode(digest))
@@ -171,7 +175,7 @@ class AWSConn():
         url = "%s://%s%s?%s&Signature=%s" % (self.protocol.lower(), self.endpoint, self.path, query_string, signature)
 
         if self.debug:
-            print url
+            print("Url = %s" % (url))
 
         req = urllib2.Request(url)
 
@@ -202,7 +206,6 @@ class AWSConn():
 
 
         try:
-            #response = urllib2.urlopen(url, None, self.timeout)
             response = urllib2.urlopen(req, None,  self.timeout)
         except urllib2.HTTPError, e:
             raise Exception("HTTPError = %s, %s, %s" % (str(e.code), e.msg, e.read()))
